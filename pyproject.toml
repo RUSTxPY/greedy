@@ -40,7 +40,7 @@ dynamic = ["version"]
 "Documentation" = "https://github.com/deedy5/ddgs/blob/main/README.md"
 
 [project.scripts]
-ddgs = "ddgs.cli:safe_entry_point"
+greedy = "ddgs.cli:safe_entry_point"
 
 [tool.setuptools.dynamic]
 version = {attr = "ddgs.__version__"}

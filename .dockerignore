@@ -9,6 +9,9 @@ __pycache__
 *.pyd
 .Python
 *.so
+!ddgs/data/*.so
+!ddgs/data/*.dll
+!ddgs/data/*.dylib
 .tox
 .coverage
 .coverage.*

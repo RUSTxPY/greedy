@@ -48,7 +48,7 @@ def build_native():
     
     # Build release version
     result = subprocess.run(
-        ['cargo', 'build', '--release', '--target', target],
+        ['cargo', 'build', '--release', '--target', target, '--target-dir', 'target'],
         cwd=native_dir,
     )
     

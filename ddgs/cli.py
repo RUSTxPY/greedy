@@ -1,4 +1,4 @@
-"""CLI tool for DDGS."""
+"""CLI tool for Greedy [metasearch]."""
 
 import csv
 import json
@@ -18,7 +18,7 @@ from .ddgs import DDGS
 from .utils import _expand_proxy_tb_alias
 
 # Use a consistent PID file location in user's home directory
-_PID_FILE = Path.home() / ".cache" / "ddgs" / "api.pid"
+_PID_FILE = Path.home() / ".cache" / "greedy" / "api.pid"
 
 logger = logging.getLogger(__name__)
 
@@ -160,7 +160,7 @@ def _download_results(
 
 @click.group(chain=True)
 def cli() -> None:
-    """DDGS CLI tool."""
+    """Greedy [metasearch] CLI tool."""
 
 
 def safe_entry_point() -> None:
@@ -234,7 +234,7 @@ def text(
     verify: bool,
     no_color: bool,
 ) -> None:
-    """CLI function to perform a DDGS text metasearch."""
+    """CLI function to perform a Greedy text metasearch."""
     data = DDGS(proxy=_expand_proxy_tb_alias(proxy), verify=verify).text(
         query=query,
         keywords=keywords,  # deprecated
@@ -338,7 +338,7 @@ def images(
     verify: bool,
     no_color: bool,
 ) -> None:
-    """CLI function to perform a DDGS images metasearch."""
+    """CLI function to perform a Greedy images metasearch."""
     data = DDGS(proxy=_expand_proxy_tb_alias(proxy), verify=verify).images(
         query=query,
         keywords=keywords,  # deprecated
@@ -412,7 +412,7 @@ def videos(
     verify: bool,
     no_color: bool,
 ) -> None:
-    """CLI function to perform a DDGS videos metasearch."""
+    """CLI function to perform a Greedy videos metasearch."""
     data = DDGS(proxy=_expand_proxy_tb_alias(proxy), verify=verify).videos(
         query=query,
         keywords=keywords,  # deprecated
@@ -468,7 +468,7 @@ def news(
     verify: bool,
     no_color: bool,
 ) -> None:
-    """CLI function to perform a DDGS news metasearch."""
+    """CLI function to perform a Greedy news metasearch."""
     data = DDGS(proxy=_expand_proxy_tb_alias(proxy), verify=verify).news(
         query=query,
         keywords=keywords,  # deprecated
@@ -515,7 +515,7 @@ def books(
     verify: bool,
     no_color: bool,
 ) -> None:
-    """CLI function to perform a DDGS books metasearch."""
+    """CLI function to perform a Greedy books metasearch."""
     data = DDGS(proxy=_expand_proxy_tb_alias(proxy), verify=verify).books(
         query=query,
         keywords=keywords,  # deprecated
@@ -564,20 +564,20 @@ def extract(
 @cli.command()
 @click.option("-pr", "--proxy", help="the proxy to send requests, example: socks5h://127.0.0.1:9150")
 def mcp(proxy: str | None) -> None:
-    """Start DDGS MCP server over stdio for local MCP clients.
+    """Start Greedy MCP server over stdio for local MCP clients.
 
     Examples:
-        ddgs mcp                            # Start MCP server using stdio transport
-        ddgs mcp -pr socks5h://127.0.0.1:9150  # With proxy
+        greedy mcp                            # Start MCP server using stdio transport
+        greedy mcp -pr socks5h://127.0.0.1:9150  # With proxy
 
-    MCP client configuration:
-        {
-          "mcpServers": {
-            "ddgs": {
-              "command": "ddgs",
+    For Claude Desktop integration, add to your claude_desktop_config.json:
+        "mcpServers": {
+            "greedy": {
+              "command": "greedy",
               "args": ["mcp"]
             }
-          }
+        }
+  }
         }
 
     """
@@ -603,18 +603,17 @@ def mcp(proxy: str | None) -> None:
 @click.option("--reload", is_flag=True, help="Enable auto-reload on code changes")
 @click.option("-pr", "--proxy", help="the proxy to send requests, example: socks5h://127.0.0.1:9150")
 def api(detach: bool, stop: bool, host: str, port: int, reload: bool, proxy: str | None) -> None:  # noqa: PLR0912, C901, FBT001
-    """Start/stop the DDGS API server.
+    """Start/stop the Greedy API server.
 
-    Starts a FastAPI server with REST endpoints for search tools.
-    Supports text, image, news, video, and book search.
+    If no option is provided, starts the server in the foreground on 127.0.0.1:9000.
+    Requires 'api' extras (e.g. `pip install ddgs[api]`).
 
     Examples:
-        ddgs api              # Start server in foreground
-        ddgs api -d           # Start server in detached mode
-        ddgs api -s           # Stop the detached server
-        ddgs api --host 127.0.0.1 --port 9000  # Bind to specific host/port
-        ddgs api -pr socks5h://127.0.0.1:9150  # Use proxy
-
+        greedy api              # Start server in foreground
+        greedy api -d           # Start server in detached mode
+        greedy api -s           # Stop the detached server
+        greedy api --host 127.0.0.1 --port 9000  # Bind to specific host/port
+        greedy api -pr socks5h://127.0.0.1:9150  # Use proxy
     """
     # Ensure PID file directory exists
     _PID_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -625,8 +624,9 @@ def api(detach: bool, stop: bool, host: str, port: int, reload: bool, proxy: str
             return
         pid = int(_PID_FILE.read_text().strip())
         try:
-            os.kill(pid, 15)  # SIGTERM
-            click.echo(f"DDGS API server stopped (PID: {pid})")
+            process.terminate()
+            process.wait(timeout=5)
+            click.echo(f"Greedy API server stopped (PID: {pid})")
         except ProcessLookupError:
             click.echo(f"Server process (PID: {pid}) was not running, cleaning up PID file")
         except OSError as e:
@@ -681,14 +681,13 @@ def api(detach: bool, stop: bool, host: str, port: int, reload: bool, proxy: str
         time.sleep(0.5)
         if process.poll() is not None:
             click.echo(f"Failed to start server: process exited with code {process.returncode}", err=True)
-            return
-
-        _PID_FILE.write_text(str(process.pid))
-        click.echo(f"DDGS API server started in detached mode on http://{host}:{port} (PID: {process.pid})")
+            process = Popen(["uvicorn", "ddgs.api_server:fastapi_app", "--host", host, "--port", str(port)])
+        
+        click.echo(f"Greedy API server started in detached mode on http://{host}:{port} (PID: {process.pid})")
         if proxy:
             click.echo(f"Using proxy: {proxy_env['DDGS_PROXY']}")
     else:
-        click.echo(f"Starting DDGS API server on http://{host}:{port}")
+        click.echo(f"Starting Greedy API server on http://{host}:{port}")
         if proxy:
             click.echo(f"Using proxy: {proxy_env['DDGS_PROXY']}")
         click.echo("Press Ctrl+C to stop")
