@@ -49,6 +49,9 @@ version = {attr = "ddgs.__version__"}
 include = ["ddgs*"]
 exclude = ["api*"]
 
+[tool.setuptools.package-data]
+ddgs = ["data/*.so", "data/*.dylib", "data/*.dll", "py.typed"]
+
 [project.optional-dependencies]
 dev = [
     "mypy>=1.17.1",
@@ -181,4 +184,9 @@ pythonpath = [".", "tests"]
 filterwarnings = [
     "ignore::DeprecationWarning",
     "ignore::UserWarning",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
 ]
