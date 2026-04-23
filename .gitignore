@@ -6,8 +6,6 @@ __pycache__/
 # C extensions
 *.so
 !ddgs/data/*.so
-!ddgs/data/*.dll
-!ddgs/data/*.dylib
 
 # Distribution / packaging
 .Python

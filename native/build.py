@@ -17,13 +17,13 @@ def get_rust_target() -> str:
         ('linux', 'amd64'): 'x86_64-unknown-linux-gnu',
         ('linux', 'aarch64'): 'aarch64-unknown-linux-gnu',
         ('linux', 'arm64'): 'aarch64-unknown-linux-gnu',
-        ('darwin', 'x86_64'): 'x86_64-apple-darwin',
-        ('darwin', 'amd64'): 'x86_64-apple-darwin',
-        ('darwin', 'arm64'): 'aarch64-apple-darwin',
     }
     
     target = targets.get((system, machine))
     if not target:
+        # Default to x86_64 if unknown but on linux
+        if system == 'linux':
+            return 'x86_64-unknown-linux-gnu'
         print(f"Unsupported platform: {system} {machine}")
         sys.exit(1)
     
@@ -57,13 +57,7 @@ def build_native():
         sys.exit(1)
     
     # Determine library name
-    system = platform.system().lower()
-    if system == 'linux':
-        lib_name = 'libddgs_native.so'
-    elif system == 'darwin':
-        lib_name = 'libddgs_native.dylib'
-    else:
-        lib_name = 'ddgs_native.dll'
+    lib_name = 'libddgs_native.so'
     
     src = native_dir / 'target' / target / 'release' / lib_name
     

@@ -10,8 +10,6 @@ __pycache__
 .Python
 *.so
 !ddgs/data/*.so
-!ddgs/data/*.dll
-!ddgs/data/*.dylib
 .tox
 .coverage
 .coverage.*
