@@ -1,40 +1,42 @@
-PY := .venv/bin/python
-PIP := .venv/bin/pip
+# Greedy Metasearch Makefile
 
-.PHONY: help setup lint format test all clean
+PYTHON := .venv/bin/python
+PIP := .venv/bin/python -m pip
+
+.PHONY: help install build test run-api docker-build docker-up upgrade
 
 help:
-	@echo "Targets:"
-	@echo "  setup   - create venv and install dependencies"
-	@echo "  lint    - run ruff check, ruff format and mypy"
-	@echo "  format  - run ruff format and ruff check --fix"
-	@echo "  test    - run pytest"
-	@echo "  all     - run setup, lint, format and test"
-	@echo "  clean   - remove cache, venv and build artifacts"
+	@echo "Available commands:"
+	@echo "  install      - Setup virtual environment and install dependencies"
+	@echo "  build        - Compile Rust native extensions"
+	@echo "  test         - Run pytest suite"
+	@echo "  run-api      - Start the FastAPI server locally"
+	@echo "  docker-build - Build the Docker image locally"
+	@echo "  docker-up    - Run the API via Docker Compose"
+	@echo "  upgrade      - Pull latest changes and rebuild everything"
 
-setup:
+install:
 	python3 -m venv .venv
-	$(PIP) install -e .[dev]
+	$(PIP) install --upgrade pip
+	$(PIP) install -e .[dev,api,mcp,dht]
 
-lint:
-	$(PY) -m ruff check --fix
-	$(PY) -m mypy --install-types --non-interactive .
-
-format:
-	$(PY) -m ruff format
+build:
+	$(PYTHON) native/build.py
 
 test:
-	$(PY) -m pytest
+	$(PYTHON) -m pytest
 
-all: setup lint format test
+run-api:
+	$(PYTHON) -m uvicorn ddgs.api_server:fastapi_app --host 0.0.0.0 --port 8000
 
-clean:
-	rm -rf .venv/
-	rm -rf .pytest_cache/
-	rm -rf .mypy_cache/
-	rm -rf .ruff_cache/
-	rm -rf build/
-	rm -rf dist/
-	rm -rf *.egg-info/
-	find . -name __pycache__ -exec rm -rf {} +
-	rm -f uv.lock
+docker-build: build
+	docker build -t ghcr.io/rustxpy/greedy:main .
+
+docker-up: build
+	cd docker_test && docker-compose up --build -d
+
+upgrade:
+	git pull origin main
+	$(MAKE) install
+	$(MAKE) build
+	@echo "✅ Upgrade complete!"
