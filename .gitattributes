@@ -1,0 +1,22 @@
+# Set default behavior to automatically handle line endings
+* text=auto
+
+# Ensure shell scripts always have LF line endings
+*.sh text eol=lf
+Makefile text eol=lf
+
+# Explicitly mark binary files to prevent corruption and hide diffs
+*.so binary
+*.dylib binary
+*.dll binary
+*.pyd binary
+
+# Mark project files for linguist and tools
+*.rs text
+*.py text
+*.toml text
+*.md text
+*.dockerignore text
+Dockerfile text
+.gitattributes text
+.gitignore text

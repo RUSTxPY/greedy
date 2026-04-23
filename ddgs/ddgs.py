@@ -119,9 +119,9 @@ def _get_async_loop() -> asyncio.AbstractEventLoop:
 
 
 class DDGS:
-    """DDGS | Dux Distributed Global Search.
+    """Greedy [metasearch] (Legacy: DDGS).
 
-    A metasearch library that aggregates results from diverse web search services.
+    A high-performance metasearch library that aggregates results from diverse web search services.
 
     Args:
         proxy: The proxy to use for the search. Defaults to None.

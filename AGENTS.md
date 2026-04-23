@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**ddgs** (Dux Distributed Global Search) is a Python metasearch library that aggregates results from diverse web search services. It provides a `DDGS` class with methods like `text()`, `images()`, `news()`, `videos()`, `books()`, and `extract()`.
+**Greedy [metasearch]** (Legacy: DDGS - Dux Distributed Global Search) is a high-performance Python metasearch library that aggregates results from diverse web search services. It provides a `DDGS` class with methods like `text()`, `images()`, `news()`, `videos()`, `books()`, and `extract()`.
 
 - **Python**: >=3.10 (tested up to 3.14)
 - **Dependencies**: `click`, `primp`, `lxml`

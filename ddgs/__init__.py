@@ -1,6 +1,6 @@
-"""DDGS | Dux Distributed Global Search.
+"""Greedy [metasearch] (Legacy: DDGS).
 
-A metasearch library that aggregates results from diverse web search services.
+A high-performance metasearch library that aggregates results from diverse web search services.
 """
 
 import importlib

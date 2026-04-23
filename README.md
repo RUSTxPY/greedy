@@ -1,7 +1,7 @@
+# Greedy [metasearch] (formerly DDGS)<a name="TOP"></a>
 ![Python >= 3.10](https://img.shields.io/badge/python->=3.10-red.svg) [![](https://badgen.net/github/release/deedy5/ddgs)](https://github.com/deedy5/ddgs/releases) [![](https://badge.fury.io/py/ddgs.svg)](https://pypi.org/project/ddgs)
-# DDGS | Dux Distributed Global Search<a name="TOP"></a>
 
-A metasearch library that aggregates results from diverse web search services.
+**Greedy [metasearch]** (Legacy: DDGS - Dux Distributed Global Search) is a high-performance metasearch library that aggregates results from diverse web search services.
 
 
 ## Table of Contents
@@ -245,7 +245,7 @@ DDGS class is lazy-loaded.
 
 ```python3
 class DDGS:
-    """Dux Distributed Global Search. A metasearch library that aggregates results from diverse web search services.
+    """Greedy [metasearch] (Legacy: DDGS). A high-performance metasearch library that aggregates results from diverse web search services.
 
     Args:
         proxy (str, optional): proxy for the HTTP client, supports http/https/socks5 protocols.

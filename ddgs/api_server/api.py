@@ -19,9 +19,9 @@ logger = logging.getLogger(__name__)
 
 # Create FastAPI app
 app = FastAPI(
-    title="DDGS API",
-    description="A FastAPI wrapper for the DDGS (Dux Distributed Global Search) library",
-    version="1.0.0",
+    title="Greedy [metasearch] API",
+    description="A high-performance FastAPI wrapper for the Greedy [metasearch] library (Legacy: DDGS)",
+    version="1.1.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )
@@ -136,13 +136,13 @@ class HealthResponse(BaseModel):
 @app.get("/", response_model=HealthResponse)
 async def root() -> HealthResponse:
     """Root endpoint with basic service information."""
-    return HealthResponse(status="healthy", version="1.0.0", service="DDGS API")
+    return HealthResponse(status="healthy", version="1.1.0", service="Greedy [metasearch] API")
 
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check() -> HealthResponse:
     """Health check endpoint."""
-    return HealthResponse(status="healthy", version="1.0.0", service="DDGS API")
+    return HealthResponse(status="healthy", version="1.1.0", service="Greedy [metasearch] API")
 
 
 @app.post("/search/text", response_model=SearchResponse)

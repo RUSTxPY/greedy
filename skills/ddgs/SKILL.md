@@ -7,7 +7,7 @@ description: Use when an agent needs to search the web, find images/news/videos/
 
 ## Overview
 
-**ddgs** (Dux Distributed Global Search) is a Python metasearch library that aggregates results from multiple search engines. Agents can use it via Python API, CLI, or MCP server.
+**Greedy [metasearch]** (Legacy: DDGS - Dux Distributed Global Search) is a high-performance Python metasearch library that aggregates results from multiple search engines. Agents can use it via Python API, CLI, or MCP server.
 
 ## Python API
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ddgs"
-description = "Dux Distributed Global Search. A metasearch library that aggregates results from diverse web search services."
+description = "Greedy [metasearch] (Legacy: DDGS). A high-performance metasearch library that aggregates results from diverse web search services."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
