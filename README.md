@@ -1,224 +1,68 @@
-# Greedy [metasearch] (formerly DDGS)<a name="TOP"></a>
-![Python >= 3.10](https://img.shields.io/badge/python->=3.10-red.svg) [![Build Native Extensions](https://github.com/RUSTxPY/greedy/actions/workflows/build-native.yml/badge.svg)](https://github.com/RUSTxPY/greedy/actions/workflows/build-native.yml) [![Publish Docker Image](https://github.com/RUSTxPY/greedy/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/RUSTxPY/greedy/actions/workflows/docker-publish.yml)
+# 🚀 Greedy [metasearch]
 
-**Greedy [metasearch]** (Legacy: DDGS - Dux Distributed Global Search) is a high-performance metasearch library that aggregates results from diverse web search services.
+[![Python >= 3.10](https://img.shields.io/badge/python->=3.10-red.svg)](https://www.python.org/)
+[![Build Native Extensions](https://github.com/RUSTxPY/greedy/actions/workflows/build-native.yml/badge.svg)](https://github.com/RUSTxPY/greedy/actions/workflows/build-native.yml)
+[![Publish Docker Image](https://github.com/RUSTxPY/greedy/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/RUSTxPY/greedy/actions/workflows/docker-publish.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-
-## Table of Contents
-* [Install](#install)
-* [CLI version](#cli-version)
-* [API Server](#api-server)
-* [DHT Network (BETA)](#dht-network-beta)
-* [MCP Server](#mcp-server)
-* [Engines](#engines)
-* [DDGS class](#ddgs-class)
-* [1. text()](#1-text)
-* [2. images()](#2-images)
-* [3. videos()](#3-videos)
-* [4. news()](#4-news)
-* [5. books()](#5-books)
-* [6. extract()](#6-extract)
-* [Disclaimer](#disclaimer)
-
-___
-## Install
-```python
-pip install -U ddgs       # Base install
-pip install -U ddgs[api]  # API server (FastAPI)
-pip install -U ddgs[mcp]  # MCP server (stdio)
-```
-
-## CLI version
-
-```bash
-greedy --help
-```
-
-[Go To TOP](#TOP)
-___
-
-## API Server
-
--- **Install**
-```bash
-pip install -U ddgs[api]
-```
-
--- **CLI**
-```bash
-greedy api              # Start server in foreground
-greedy api -d           # Start in detached mode (background)
-greedy api -s           # Stop detached server
-greedy api --host 0.0.0.0 --port 8000  # Default port 8000
-greedy api -pr socks5h://127.0.0.1:9150  # With proxy
-```
-
--- **Docker (Prebuilt)**
-```bash
-# Pull and run the official prebuilt image
-docker pull ghcr.io/rustxpy/greedy:main
-docker run -p 8000:8000 ghcr.io/rustxpy/greedy:main
-```
-
--- **Docker compose (Local)**
-```bash
-git clone https://github.com/rustxpy/greedy && cd greedy
-# Local build will use prebuilt native libraries for speed
-docker-compose up --build
-```
-
--- **Bash script**
-```bash
-git clone https://github.com/deedy5/ddgs && cd ddgs
-chmod +x start_api.sh
-./start_api.sh
-```
-
-#### Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/search/text` | GET, POST | Text search |
-| `/search/images` | GET, POST | Image search |
-| `/search/news` | GET, POST | News search |
-| `/search/videos` | GET, POST | Video search |
-| `/search/books` | GET, POST | Book search |
-| `/extract` | GET, POST | Extract content from URL |
-| `/health` | GET | Health check |
-| `/docs` | GET | Swagger UI |
-| `/redoc` | GET | ReDoc documentation |
-
-[Go To TOP](#TOP)
-___
-
-## DHT Network (BETA)
-
-DDGS includes an optional peer-to-peer distributed cache network. Search results are shared anonymously between users, drastically reducing rate limits and latency for everyone.
-
-This is the only metasearch engine that can actually get faster the more people use it.
+**Greedy [metasearch]** (Legacy: DDGS) is a high-performance, distributed metasearch engine and library. It aggregates results from dozens of search providers, optimized with a **Rust-native core** for blazing fast text normalization and ranking.
 
 ---
 
-### Why this exists
+## ✨ Key Features
 
-Every DDGS user currently hits search engines independently. Everyone gets rate limited individually. Everyone waits 1-2 seconds for exactly the same results.
-
-The DHT network fixes this:
-- ✅ **90% faster** repeated queries (50ms instead of 1-2s)
-- ✅ **No rate limits** for common queries
-- ✅ **Zero infrastructure cost** - runs entirely on user machines
-- ✅ **No central server** - cannot be blocked or shut down
-- ✅ **Anonymous** - no one sees your queries, no logs
-
-### How it works
-
-When running:
-1. Your node automatically discovers other DDGS users
-2. All existing API endpoints automatically check the network first
-3. If found, returns results immediately
-4. If not, searches normally and shares the result anonymously
-5. Every new user makes the network faster for everyone else
+- 🏎️ **High Performance**: Native Rust extensions for heavy-duty text processing.
+- 🌐 **Distributed (DHT)**: Optional P2P distributed cache network to share results and bypass rate limits.
+- 🔌 **Versatile**: Use as a Python library, a standalone CLI, a FastAPI-powered REST API, or an MCP server.
+- 📦 **Zero-Config Docker**: Official prebuilt images with native binaries included.
+- 🔍 **Multi-Engine**: Aggregates Bing, Google, DuckDuckGo, Brave, Wikipedia, and more.
 
 ---
 
-### Installation
+## ⚡ Quick Start
 
+### Python Library
 ```bash
-# Install base DHT package
-pip install -U ddgs[dht]
-
-# Install required dependencies (works on Linux and macOS)
-pip install coincurve@git+https://github.com/ofek/coincurve.git@7829b29c08ebb1cc80386a1cdaf8c2243c4ef5c5
-pip install libp2p@git+https://github.com/libp2p/py-libp2p.git@0e88584c89377086883c6f5b26cd1a8052399be7
-
-# macOS only: First install gmp
-brew install gmp
-
-# Windows: DHT is not supported. Use base package only.
+pip install -U ddgs
 ```
-
-When installed, DHT:
-- Adds persistent local result cache
-- Adds `/dht/*` endpoints to the API server automatically
-- Starts full distributed network node when you run `ddgs api`
-- Works fully transparently - all existing search methods automatically use cache
-
-> **Platform Support**: DHT works on Linux and macOS. Windows is not currently supported due to libp2p dependencies.
-
-1. Using terminal
-```bash
-greedy api -d
-```
-2. Using DDGS initialization
 ```python
 from ddgs import DDGS
 
-ddgs = DDGS(api_url="http://localhost:8000", spawn_api=True)
+results = DDGS().text("python programming", max_results=5)
+for r in results:
+    print(f"{r['title']} -> {r['href']}")
 ```
 
-You do **not** need to change any existing code. Any Python script using `DDGS().text()`, `images()`, etc. will automatically use both the local cache and the distributed DHT network.
-
-DHT will automatically start in the background and begin participating in the network.
-
-### DHT API Endpoints
-
-| Endpoint | Method | Description |
-|---|---|---|
-| `/dht/cache` | GET | Get cached results |
-| `/dht/cache` | POST | Store results to cache |
-| `/dht/cache` | DELETE | Invalidate cached results |
-| `/dht/status` | GET | DHT service status and metrics |
-| `/dht/peers` | GET | List connected peers |
-| `/dht/peers/detailed` | GET | Detailed peer information |
-| `/dht/map` | GET | Network graph view |
-| `/dht/metrics` | GET | Prometheus format metrics |
+### Docker (Recommended)
+Run the full API server instantly with zero local dependencies:
+```bash
+docker run -p 8000:8000 ghcr.io/rustxpy/greedy:main
+```
 
 ---
 
-### Beta Status
+## 🛠️ Installation & Usage
 
-This is working beta software. All functionality is complete, but network performance will improve as more users join:
-
-| Network Size | Performance |
-|--------------|-------------|
-| < 50 nodes | Marginal - expect timeouts |
-| 50-200 nodes | Good - >95% success rate |
-| >200 nodes | Excellent - near perfect |
-
-Results use eventual consistency and may take 1-5 minutes to propagate.
-
-Please report any issues here: https://github.com/deedy5/ddgs/issues
-
-[Go To TOP](#TOP)
-___
-
-## MCP Server
-
-- **Install**
+### 1. CLI Usage
+The `greedy` command is your entry point for all operations.
 ```bash
-pip install -U ddgs[mcp]
+greedy --help
+
+# Search directly from terminal
+greedy text -q "future of AI" --max-results 5
+
+# Start API server
+greedy api --host 0.0.0.0 --port 8000
 ```
 
-- **CLI**
-```bash
-greedy mcp    # Start MCP server (stdio transport)
-greedy mcp -pr socks5h://127.0.0.1:9150  # With proxy
-```
+### 2. API Server
+Greedy includes a production-ready FastAPI server with built-in Swagger documentation.
 
-#### Available Tools
+- **Endpoints**: `/search/text`, `/search/images`, `/search/news`, `/search/videos`, `/extract`
+- **Documentation**: Access `/docs` or `/redoc` on your running server.
 
-| Tool | Description |
-|------|-------------|
-| `search_text` | Web text search |
-| `search_images` | Image search |
-| `search_news` | News search |
-| `search_videos` | Video search |
-| `search_books` | Book search |
-| `extract_content` | Extract content from a URL |
-
-#### Client Configuration
-
-For MCP clients like Cursor or Claude Desktop:
+### 3. MCP Server (AI Agent Tool)
+Integrate Greedy into AI tools like Claude Desktop or Cursor:
 ```json
 {
   "mcpServers": {
@@ -230,378 +74,29 @@ For MCP clients like Cursor or Claude Desktop:
 }
 ```
 
-[Go To TOP](#TOP)
-___
+---
 
-## Engines
+## 🌐 DHT Network (Beta)
+Greedy features an optional P2P cache. When enabled, nodes share search results anonymously.
+- **Why?**: Avoid engine rate limits and get **50ms** response times for common queries.
+- **Setup**: `pip install ddgs[dht]` (Requires Linux/macOS).
 
-| DDGS function | Available backends |
-| --------------|:-------------------|
-| text()        | `bing`, `brave`, `duckduckgo`, `google`, `grokipedia`, `mojeek`, `yandex`, `yahoo`, `wikipedia`|
-| images()      | `bing`, `duckduckgo` |
-| videos()      | `duckduckgo` |
-| news()        | `bing`, `duckduckgo`, `yahoo` |
-| books()       | `annasarchive` |
+---
 
-[Go To TOP](#TOP)
+## 🧩 Supported Engines
 
-## DDGS class
+| Category | Providers |
+|----------|-----------|
+| **Text** | Bing, Brave, DuckDuckGo, Google, Grokipedia, Mojeek, Yandex, Wikipedia |
+| **Media**| Bing (Images/News), DuckDuckGo (Images/Videos/News), Yahoo (News) |
+| **Books**| Anna's Archive |
 
-DDGS class is lazy-loaded.
+---
 
-```python3
-class DDGS:
-    """Greedy [metasearch] (Legacy: DDGS). A high-performance metasearch library that aggregates results from diverse web search services.
+## 🤝 Credits & Disclaimer
+Greedy is built upon the excellent foundation of **DDGS** (Dux Distributed Global Search) by [deedy5](https://github.com/deedy5/ddgs). This project maintains the core vision while adding modern CI/CD, Rust-native optimizations, and streamlined deployment.
 
-    Args:
-        proxy (str, optional): proxy for the HTTP client, supports http/https/socks5 protocols.
-            example: "http://user:pass@example.com:3128". Defaults to None.
-        timeout (int, optional): Timeout value for the HTTP client. Defaults to 5.
-        verify: (bool | str):  True to verify, False to skip, or a str path to a PEM file. Defaults to True.
-    """
-```
+*This library is for educational purposes only. Always respect the Terms of Service of the search providers.*
 
-Here is an example of initializing the DDGS class.
-```python3
-from ddgs import DDGS
-
-results = DDGS().text("python programming", max_results=5)
-print(results)
-```
-
-[Go To TOP](#TOP)
-
-## 1. text()
-
-```python
-def text(
-    query: str,
-    region: str = "us-en",
-    safesearch: str = "moderate",
-    timelimit: str | None = None,
-    max_results: int | None = 10,
-    page: int = 1,
-    backend: str = "auto",
-) -> list[dict[str, str]]:
-    """DDGS text metasearch.
-
-    Args:
-        query: text search query.
-        region: us-en, uk-en, ru-ru, etc. Defaults to us-en.
-        safesearch: on, moderate, off. Defaults to "moderate".
-        timelimit: d, w, m, y. Defaults to None.
-        max_results: maximum number of results. Defaults to 10.
-        page: page of results. Defaults to 1.
-        backend: A single or comma-delimited backends. Defaults to "auto".
-
-    Returns:
-        List of dictionaries with search results.
-    """
-```
-***Example***
-```python
-results = DDGS().text("live free or die", region="us-en", safesearch="off", timelimit="y", page=1, backend="auto")
-# Searching for pdf files
-results = DDGS().text("russia filetype:pdf", region="us-en", safesearch="off", timelimit="y", page=1, backend="auto")
-print(results)
-[
-    {
-        "title": "News, sport, celebrities and gossip | The Sun",
-        "href": "https://www.thesun.co.uk/",
-        "body": "Get the latest news, exclusives, sport, celebrities, showbiz, politics, business and lifestyle from The Sun",
-    },
-    ...,
-]
-```
-
-[Go To TOP](#TOP)
-
-## 2. images()
-
-```python
-def images(
-    query: str,
-    region: str = "us-en",
-    safesearch: str = "moderate",
-    timelimit: str | None = None,
-    max_results: int | None = 10,
-    page: int = 1,
-    backend: str = "auto",
-    size: str | None = None,
-    color: str | None = None,
-    type_image: str | None = None,
-    layout: str | None = None,
-    license_image: str | None = None,
-) -> list[dict[str, str]]:
-    """DDGS images metasearch.
-
-    Args:
-        query: images search query.
-        region: us-en, uk-en, ru-ru, etc. Defaults to us-en.
-        safesearch: on, moderate, off. Defaults to "moderate".
-        timelimit: d, w, m, y. Defaults to None.
-        max_results: maximum number of results. Defaults to 10.
-        page: page of results. Defaults to 1.
-        backend: A single or comma-delimited backends. Defaults to "auto".
-        size: Small, Medium, Large, Wallpaper. Defaults to None.
-        color: color, Monochrome, Red, Orange, Yellow, Green, Blue,
-            Purple, Pink, Brown, Black, Gray, Teal, White. Defaults to None.
-        type_image: photo, clipart, gif, transparent, line.
-            Defaults to None.
-        layout: Square, Tall, Wide. Defaults to None.
-        license_image: any (All Creative Commons), Public (PublicDomain),
-            Share (Free to Share and Use), ShareCommercially (Free to Share and Use Commercially),
-            Modify (Free to Modify, Share, and Use), ModifyCommercially (Free to Modify, Share, and
-            Use Commercially). Defaults to None.
-
-    Returns:
-        List of dictionaries with images search results.
-    """
-```
-***Example***
-```python
-results = DDGS().images(
-    query="butterfly",
-    region="us-en",
-    safesearch="off",
-    timelimit="m",
-    page=1,
-    backend="auto",
-    size=None,
-    color="Monochrome",
-    type_image=None,
-    layout=None,
-    license_image=None,
-)
-print(images)
-[
-    {
-        "title": "File:The Sun by the Atmospheric Imaging Assembly of NASA's Solar ...",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA's_Solar_Dynamics_Observatory_-_20100819.jpg",
-        "thumbnail": "https://tse4.mm.bing.net/th?id=OIP.lNgpqGl16U0ft3rS8TdFcgEsEe&pid=Api",
-        "url": "https://en.wikipedia.org/wiki/File:The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA's_Solar_Dynamics_Observatory_-_20100819.jpg",
-        "height": 3860,
-        "width": 4044,
-        "source": "Bing",
-    },
-    ...,
-]
-```
-
-[Go To TOP](#TOP)
-
-## 3. videos()
-
-```python
-def videos(
-    query: str,
-    region: str = "us-en",
-    safesearch: str = "moderate",
-    timelimit: str | None = None,
-    max_results: int | None = 10,
-    page: int = 1,
-    backend: str = "auto",
-    resolution: str | None = None,
-    duration: str | None = None,
-    license_videos: str | None = None,
-) -> list[dict[str, str]]:
-    """DDGS videos metasearch.
-
-    Args:
-        query: videos search query.
-        region: us-en, uk-en, ru-ru, etc. Defaults to us-en.
-        safesearch: on, moderate, off. Defaults to "moderate".
-        timelimit: d, w, m. Defaults to None.
-        max_results: maximum number of results. Defaults to 10.
-        page: page of results. Defaults to 1.
-        backend: A single or comma-delimited backends. Defaults to "auto".
-        resolution: high, standart. Defaults to None.
-        duration: short, medium, long. Defaults to None.
-        license_videos: creativeCommon, youtube. Defaults to None.
-
-    Returns:
-        List of dictionaries with videos search results.
-    """
-```
-***Example***
-```python
-results = DDGS().videos(
-    query="cars",
-    region="us-en",
-    safesearch="off",
-    timelimit="w",
-    page=1,
-    backend="auto",
-    resolution="high",
-    duration="medium",
-)
-print(results)
-[
-    {
-        "content": "https://www.youtube.com/watch?v=6901-C73P3g",
-        "description": "Watch the Best Scenes of popular Tamil Serial #Meena that airs on Sun TV. Watch all Sun TV serials immediately after the TV telecast on Sun NXT app. *Free for Indian Users only Download here: Android - http://bit.ly/SunNxtAdroid iOS: India - http://bit.ly/sunNXT Watch on the web - https://www.sunnxt.com/ Two close friends, Chidambaram ...",
-        "duration": "8:22",
-        "embed_html": '<iframe width="1280" height="720" src="https://www.youtube.com/embed/6901-C73P3g?autoplay=1" frameborder="0" allowfullscreen></iframe>',
-        "embed_url": "https://www.youtube.com/embed/6901-C73P3g?autoplay=1",
-        "image_token": "6c070b5f0e24e5972e360d02ddeb69856202f97718ea6c5d5710e4e472310fa3",
-        "images": {
-            "large": "https://tse4.mm.bing.net/th?id=OVF.JWBFKm1u%2fHd%2bz2e1GitsQw&pid=Api",
-            "medium": "https://tse4.mm.bing.net/th?id=OVF.JWBFKm1u%2fHd%2bz2e1GitsQw&pid=Api",
-            "motion": "",
-            "small": "https://tse4.mm.bing.net/th?id=OVF.JWBFKm1u%2fHd%2bz2e1GitsQw&pid=Api",
-        },
-        "provider": "Bing",
-        "published": "2024-07-03T05:30:03.0000000",
-        "publisher": "YouTube",
-        "statistics": {"viewCount": 29059},
-        "title": "Meena - Best Scenes | 02 July 2024 | Tamil Serial | Sun TV",
-        "uploader": "Sun TV",
-    },
-    ...,
-]
-```
-
-[Go To TOP](#TOP)
-
-## 4. news()
-
-```python
-def news(
-    query: str,
-    region: str = "us-en",
-    safesearch: str = "moderate",
-    timelimit: str | None = None,
-    max_results: int | None = 10,
-    page: int = 1,
-    backend: str = "auto",
-) -> list[dict[str, str]]:
-    """DDGS news metasearch.
-
-    Args:
-        query: news search query.
-        region: us-en, uk-en, ru-ru, etc. Defaults to us-en.
-        safesearch: on, moderate, off. Defaults to "moderate".
-        timelimit: d, w, m. Defaults to None.
-        max_results: maximum number of results. Defaults to 10.
-        page: page of results. Defaults to 1.
-        backend: A single or comma-delimited backends. Defaults to "auto".
-
-    Returns:
-        List of dictionaries with news search results.
-    """
-```
-***Example***
-```python
-results = DDGS().news(query="sun", region="us-en", safesearch="off", timelimit="m", page=1, backend="auto")
-print(results)
-[
-    {
-        "date": "2024-07-03T16:25:22+00:00",
-        "title": "Murdoch's Sun Endorses Starmer's Labour Day Before UK Vote",
-        "body": "Rupert Murdoch's Sun newspaper endorsed Keir Starmer and his opposition Labour Party to win the UK general election, a dramatic move in the British media landscape that illustrates the country's shifting political sands.",
-        "url": "https://www.msn.com/en-us/money/other/murdoch-s-sun-endorses-starmer-s-labour-day-before-uk-vote/ar-BB1plQwl",
-        "image": "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BB1plZil.img?w=2000&h=1333&m=4&q=79",
-        "source": "Bloomberg on MSN.com",
-    },
-    ...,
-]
-```
-
-[Go To TOP](#TOP)
-
-## 5. books()
-
-```python
-def books(
-    query: str,
-    max_results: int | None = 10,
-    page: int = 1,
-    backend: str = "auto",
-) -> list[dict[str, str]]:
-    """DDGS books metasearch.
-
-    Args:
-        query: news search query.
-        max_results: maximum number of results. Defaults to 10.
-        page: page of results. Defaults to 1.
-        backend: A single or comma-delimited backends. Defaults to "auto".
-
-    Returns:
-        List of dictionaries with news search results.
-    """
-```
-***Example***
-```python
-results = DDGS().books(query="sea wolf jack london", page=1, backend="auto")
-print(results)
-[
-    {
-        "title": "The Sea-Wolf",
-        "author": "Jack London",
-        "publisher": "DigiCat, 2022",
-        "info": "English [en], .epub, 🚀/zlib, 0.5MB, 📗 Book (unknown)",
-        "url": "https://annas-archive.li/md5/574f6556f1df6717de4044e36c7c2782",
-        "thumbnail": "https://s3proxy.cdn-zlib.sk//covers299/collections/userbooks/da4954486be7c2b2b9f70b2aa5bcf01292de3ea510b5656f892821950ded9ada.jpg",
-    },
-    ...,
-]
-```
-
-[Go To TOP](#TOP)
-
-## 6. extract()
-
-Fetch a URL and extract its content in various formats.
-
-```python
-def extract(
-    url: str,
-    fmt: str = "text_markdown",
-) -> dict[str, str | bytes]:
-    """Fetch a URL and extract its content.
-
-    Args:
-        url: The URL to fetch and extract content from.
-        fmt: Output format:
-            "text_markdown" (HTML→Markdown, preserves links/headers/lists),
-            "text_plain" (HTML→plain text),
-            "text_rich" (HTML→rich text with headers/lists),
-            "text" (raw HTML),
-            "content" (raw bytes).
-
-    Returns:
-        Dictionary with 'url' and 'content' keys.
-    """
-```
-***Examples***
-```python
-# Markdown (default) - preserves links, headers, lists
-result = DDGS().extract("https://example.com")
-print(result)
-{"url": "https://example.com", "content": "# Example Domain\n\nThis domain is for use in..."}
-
-# Plain text
-result = DDGS().extract("https://example.com", fmt="text_plain")
-
-# Rich text (headers/lists, no link URLs)
-result = DDGS().extract("https://example.com", fmt="text_rich")
-
-# Raw HTML
-result = DDGS().extract("https://example.com", fmt="text")
-
-# Raw bytes
-result = DDGS().extract("https://example.com", fmt="content")
-```
-
-***CLI***
-```bash
-greedy extract -u https://example.com
-greedy extract -u https://example.com -f text_plain
-greedy extract -u https://example.com -f content -o output.json
-```
-
-[Go To TOP](#TOP)
-
-## Disclaimer
-
-This library is for educational purposes only.
+---
+[Go to Top](#top)
