@@ -71,3 +71,25 @@ docker-compose*.yml
 requirements.txt
 
 # API files - keeping for Docker build context
+
+# Native build artifacts
+native/target/
+native/Cargo.lock
+!native/
+
+# Documentation and plan files
+*.md
+!README.md
+plan/
+knowledge/
+brain/
+.gemini/
+
+# Misc
+.prek
+.python-version
+.pre-commit-config.yaml
+uv.lock
+Makefile
+start_api.sh
+skills/
