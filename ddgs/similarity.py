@@ -32,6 +32,52 @@ class SimpleFilterRanker:
 
     def rank(self, docs: list[dict[str, str]], query: str) -> list[dict[str, str]]:
         """Rank a list of docs based on a query string."""
+        if not docs:
+            return []
+
+        # Try native ranking first
+        try:
+            from .utils_native import is_native_available, rank_similarity_native
+            if is_native_available():
+                titles = [doc.get("title", "") for doc in docs]
+                bodies = [doc.get("body", doc.get("description", "")) for doc in docs]
+                hrefs = [doc.get("href", "") for doc in docs]
+                
+                bucket_indices = rank_similarity_native(
+                    query, 
+                    self.min_token_length, 
+                    titles, 
+                    bodies, 
+                    hrefs
+                )
+                
+                # Reconstruct buckets
+                wiki_hits = []
+                both = []
+                title_only = []
+                body_only = []
+                neither = []
+                
+                for i, bucket_idx in enumerate(bucket_indices):
+                    doc = docs[i]
+                    if bucket_idx == 0:
+                        wiki_hits.append(doc)
+                    elif bucket_idx == 1:
+                        both.append(doc)
+                    elif bucket_idx == 2:
+                        title_only.append(doc)
+                    elif bucket_idx == 3:
+                        body_only.append(doc)
+                    elif bucket_idx == 4:
+                        neither.append(doc)
+                    # -1 (skip) is ignored, as in original Python
+                
+                return wiki_hits + both + title_only + body_only + neither
+        except Exception:
+            # Fall back to pure Python
+            pass
+
+        # Pure Python fallback
         tokens = self._extract_tokens(query)
 
         wiki_hits = []
@@ -43,19 +89,15 @@ class SimpleFilterRanker:
         for doc in docs:
             href = doc.get("href", "")
             title = doc.get("title", "")
-            # fallback to 'description' if no 'body'
             body = doc.get("body", doc.get("description", ""))
 
-            # Skip Wikimedia category pages
             if all(x in title for x in ["Category:", "Wikimedia"]):
                 continue
 
-            # Wikipedia check
             if "wikipedia.org" in href:
                 wiki_hits.append(doc)
                 continue
 
-            # Title / Body match
             hit_title = self._has_any_token(title, tokens)
             hit_body = self._has_any_token(body, tokens)
 
@@ -68,5 +110,4 @@ class SimpleFilterRanker:
             else:
                 neither.append(doc)
 
-        # final ranking
         return wiki_hits + both + title_only + body_only + neither
