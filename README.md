@@ -1,5 +1,5 @@
 # Greedy [metasearch] (formerly DDGS)<a name="TOP"></a>
-![Python >= 3.10](https://img.shields.io/badge/python->=3.10-red.svg) [![](https://badgen.net/github/release/deedy5/ddgs)](https://github.com/deedy5/ddgs/releases) [![](https://badge.fury.io/py/ddgs.svg)](https://pypi.org/project/ddgs)
+![Python >= 3.10](https://img.shields.io/badge/python->=3.10-red.svg) [![Build Native Extensions](https://github.com/RUSTxPY/greedy/actions/workflows/build-native.yml/badge.svg)](https://github.com/RUSTxPY/greedy/actions/workflows/build-native.yml) [![Publish Docker Image](https://github.com/RUSTxPY/greedy/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/RUSTxPY/greedy/actions/workflows/docker-publish.yml)
 
 **Greedy [metasearch]** (Legacy: DDGS - Dux Distributed Global Search) is a high-performance metasearch library that aggregates results from diverse web search services.
 
@@ -30,8 +30,8 @@ pip install -U ddgs[mcp]  # MCP server (stdio)
 
 ## CLI version
 
-```python3
-ddgs --help
+```bash
+greedy --help
 ```
 
 [Go To TOP](#TOP)
@@ -46,16 +46,24 @@ pip install -U ddgs[api]
 
 -- **CLI**
 ```bash
-ddgs api              # Start server in foreground
-ddgs api -d           # Start in detached mode (background)
-ddgs api -s           # Stop detached server
-ddgs api --host 127.0.0.1 --port 4479  # Default port 4479
-ddgs api -pr socks5h://127.0.0.1:9150  # With proxy
+greedy api              # Start server in foreground
+greedy api -d           # Start in detached mode (background)
+greedy api -s           # Stop detached server
+greedy api --host 0.0.0.0 --port 8000  # Default port 8000
+greedy api -pr socks5h://127.0.0.1:9150  # With proxy
 ```
 
--- **Docker compose**
+-- **Docker (Prebuilt)**
 ```bash
-git clone https://github.com/deedy5/ddgs && cd ddgs
+# Pull and run the official prebuilt image
+docker pull ghcr.io/rustxpy/greedy:main
+docker run -p 8000:8000 ghcr.io/rustxpy/greedy:main
+```
+
+-- **Docker compose (Local)**
+```bash
+git clone https://github.com/rustxpy/greedy && cd greedy
+# Local build will use prebuilt native libraries for speed
 docker-compose up --build
 ```
 
@@ -137,17 +145,15 @@ When installed, DHT:
 
 > **Platform Support**: DHT works on Linux and macOS. Windows is not currently supported due to libp2p dependencies.
 
-### Running
-
 1. Using terminal
 ```bash
-ddgs api -d
+greedy api -d
 ```
 2. Using DDGS initialization
 ```python
 from ddgs import DDGS
 
-ddgs = DDGS(api_url="http://localhost:4479", spawn_api=True)
+ddgs = DDGS(api_url="http://localhost:8000", spawn_api=True)
 ```
 
 You do **not** need to change any existing code. Any Python script using `DDGS().text()`, `images()`, etc. will automatically use both the local cache and the distributed DHT network.
@@ -195,8 +201,8 @@ pip install -U ddgs[mcp]
 
 - **CLI**
 ```bash
-ddgs mcp    # Start MCP server (stdio transport)
-ddgs mcp -pr socks5h://127.0.0.1:9150  # With proxy
+greedy mcp    # Start MCP server (stdio transport)
+greedy mcp -pr socks5h://127.0.0.1:9150  # With proxy
 ```
 
 #### Available Tools
@@ -216,8 +222,8 @@ For MCP clients like Cursor or Claude Desktop:
 ```json
 {
   "mcpServers": {
-    "ddgs": {
-      "command": "ddgs",
+    "greedy": {
+      "command": "greedy",
       "args": ["mcp"]
     }
   }
@@ -589,9 +595,9 @@ result = DDGS().extract("https://example.com", fmt="content")
 
 ***CLI***
 ```bash
-ddgs extract -u https://example.com
-ddgs extract -u https://example.com -f text_plain
-ddgs extract -u https://example.com -f content -o output.json
+greedy extract -u https://example.com
+greedy extract -u https://example.com -f text_plain
+greedy extract -u https://example.com -f content -o output.json
 ```
 
 [Go To TOP](#TOP)
